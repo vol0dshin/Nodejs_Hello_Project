@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="./components/sidebar/sidebar.css">
+
+<template x-if="accessToken">
+  <div class="sidebar p-4 bg-gray-50 border-r border-gray-200 overflow-y-auto">
+    <h2 class="sidebar-title text-xl font-bold mb-4">Rooms</h2>
+    <div class="room-list space-y-1 px-4">
+      <template x-for="room in rooms" :key="room.roomId">
+        <li 
+          @click="switchRoom(room.roomId)" 
+          :class="{ 'active': room.roomId === roomId }" 
+          x-text="room.name || room.roomId"
+          class="cursor-pointer rounded-lg"
+        ></li>
+      </template>
+    </div>
+    <div class="mt-4">
+      <input x-model="newRoomName" placeholder="New room name" class="border p-2 w-full mb-2 rounded">
+      <button @click="createRoom()" class="bg-indigo-500 text-white p-2 w-full rounded hover:bg-indigo-600 transition">Create Room</button>
+      <p x-show="newRoomId" class="text-sm text-gray-600 mt-1">Room ID: <span x-text="newRoomId"></span></p>
+    </div>
+  </div>
+</template>

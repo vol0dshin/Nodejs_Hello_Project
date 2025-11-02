@@ -1,0 +1,16 @@
+.login-box {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.login-title {
+  text-align: center;
+}
+
+.login-btn {
+  font-weight: 500;
+}
+
+.login-error {
+  font-size: 0.9rem;
+}

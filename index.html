@@ -1,109 +1,76 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <title>Matrix Chat — Авторизація</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs" defer></script>
+  <meta charset="UTF-8">
+  <title>Matrix Chat</title>
+
+  <!-- Tailwind + Alpine -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs" defer></script>
+
+  <!-- Глобальні стилі -->
+  <link rel="stylesheet" href="./styles/global.css">
+
+  <!-- Скрипти компонентів -->
+  <script src="./components/login/login.js"></script>
+  <script src="./components/sidebar/sidebar.js"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen" x-data="chatApp()">
 
-    <!-- Вікно логіну -->
-    <template x-if="!accessToken">
-        <div class="bg-white p-8 rounded-2xl shadow-lg w-[420px]">
-            <h2 class="text-2xl font-bold mb-5 text-center text-gray-800">Вхід до Matrix</h2>
+<body class="bg-gray-100 flex items-center justify-center p-4">
 
-            <input x-model="username" placeholder="Ім'я користувача"
-                   class="border border-gray-300 p-3 w-full mb-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" />
-            <input x-model="password" type="password" placeholder="Пароль"
-                   class="border border-gray-300 p-3 w-full mb-4 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" />
-            <button @click="login()"
-                    class="bg-blue-600 hover:bg-blue-700 text-white p-3 w-full rounded-lg font-semibold transition">
-                Увійти
-            </button>
+  <div x-data="chatApp()" class="chat-container bg-white rounded-lg shadow-lg flex w-full max-w-5xl">
+    <!-- Сайдбар -->
+    <div id="sidebar-container" class="sidebar"></div>
 
-            <p x-text="error" class="text-red-600 mt-3 text-center font-medium"></p>
-        </div>
-    </template>
+    <!-- Основна частина -->
+    <div class="chat-area p-4 flex flex-col">
+      <div id="login-container"></div>
+    </div>
+  </div>
 
-    <!-- Панель після авторизації -->
-    <template x-if="accessToken">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-[700px] flex flex-col space-y-6">
-            <h1 class="text-2xl font-bold text-gray-800 text-center">
-                ✅ Ви успішно авторизувались!
-            </h1>
+  <script>
+    // Підвантаження компонентів після завантаження DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      // login.html
+      fetch('./components/login/login.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('login-container').innerHTML = html;
+        })
+        .catch(err => console.error('Помилка завантаження login.html:', err));
 
-            <!-- Інформація користувача -->
-            <div class="bg-gray-100 p-4 rounded-lg text-gray-700">
-                <p><span class="font-bold">Ваш Matrix ID:</span> <span x-text="userId ? userId : 'Завантаження...'"></span></p>
-                <p><span class="font-bold">Токен доступу:</span> <span x-text="accessToken.slice(0, 15) + '...'" class="text-sm text-gray-500"></span></p>
-            </div>
+      // sidebar.html
+      fetch('./components/sidebar/sidebar.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('sidebar-container').innerHTML = html;
+        })
+        .catch(err => console.error('Помилка завантаження sidebar.html:', err));
+    });
 
-            <!-- Розділ резюме -->
-            <div class="bg-blue-50 p-5 rounded-lg border border-blue-200">
-                <h2 class="text-xl font-bold mb-3 text-blue-700">👤 Резюме користувача</h2>
-                <ul class="space-y-1 text-gray-800">
-                    <li><span class="font-semibold">Ім'я:</span> Володимир</li>
-                    <li><span class="font-semibold">Прізвище:</span> Sh </li>
-                    <li><span class="font-semibold">Рік народження:</span> 1992</li>
-                    <li><span class="font-semibold">Місце навчання:</span> KPI</li>
-                    <li><span class="font-semibold">Спеціальність:</span> Комп'ютерні науки</li>
-                </ul>
-            </div>
+    // Alpine компонент
+    function chatApp() {
+      return {
+        username: '',
+        password: '',
+        accessToken: '',
+        userId: '',
+        roomId: '',
+        joinRoomId: '',
+        newRoomName: '',
+        newRoomId: '',
+        rooms: [],
+        messages: [],
+        newMessage: '',
+        inviteUser: '',
+        error: '',
+        lastSyncToken: '',
+        login,
+        createRoom,
+        fetchRoomsWithNames,
+      };
+    }
+  </script>
 
-            <!-- Кнопка виходу -->
-            <button @click="logout()" class="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg font-semibold transition">
-                Вийти
-            </button>
-        </div>
-    </template>
-
-    <script>
-        function chatApp() {
-            return {
-                username: '',
-                password: '',
-                accessToken: '',
-                userId: '',
-                error: '',
-
-                async login() {
-                    this.error = '';
-                    try {
-                        const res = await fetch('https://matrix.org/_matrix/client/r0/login', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                type: 'm.login.password',
-                                user: this.username,
-                                password: this.password
-                            })
-                        });
-
-                        const data = await res.json();
-
-                        if (data.access_token) {
-                            this.accessToken = data.access_token;
-                            this.userId = data.user_id;
-                        } else {
-                            // Українська локалізація повідомлення
-                            this.error = '❌ Невірне ім’я користувача або пароль.';
-                        }
-                    } catch (e) {
-                        this.error = '⚠️ Помилка під час входу. Перевірте з’єднання з інтернетом.';
-                        console.error(e);
-                    }
-                },
-
-                logout() {
-                    this.accessToken = '';
-                    this.userId = '';
-                    this.username = '';
-                    this.password = '';
-                    this.error = '';
-                }
-            }
-        }
-    </script>
 </body>
 </html>

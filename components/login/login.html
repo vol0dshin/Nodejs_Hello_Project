@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="./components/login/login.css">
+
+<template x-if="!accessToken">
+  <div class="login-box p-4">
+    <h2 class="login-title text-xl font-bold mb-4">Вхід у Matrix</h2>
+    <input x-model="username" placeholder="Ім’я користувача (наприклад, @user:matrix.org)"
+           class="border p-2 w-full mb-2 rounded" />
+    <input x-model="password" type="password" placeholder="Пароль"
+           class="border p-2 w-full mb-3 rounded" />
+    <button @click="login()" class="login-btn bg-blue-600 text-white p-2 w-full rounded hover:bg-blue-700 transition">
+      Увійти
+    </button>
+    <p x-text="error" class="login-error text-red-500 mt-3"></p>
+  </div>
+</template>
