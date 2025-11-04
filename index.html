@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
   <meta charset="UTF-8">
   <title>Matrix Chat</title>
@@ -14,6 +15,7 @@
   <!-- Скрипти компонентів -->
   <script src="./components/login/login.js"></script>
   <script src="./components/sidebar/sidebar.js"></script>
+  <script src="./components/chat/chat.js"></script>
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center p-4">
@@ -25,6 +27,9 @@
     <!-- Основна частина -->
     <div class="chat-area p-4 flex flex-col">
       <div id="login-container"></div>
+
+      <!-- Контейнер для чату -->
+      <div id="chat-container" class="chat-container"></div>
     </div>
   </div>
 
@@ -47,6 +52,14 @@
         })
         .catch(err => console.error('Помилка завантаження sidebar.html:', err));
     });
+    // Завантаження chat.html
+    fetch('./components/chat/chat.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('chat-container').innerHTML = html;
+      })
+      .catch(error => console.error('Error loading chat:', error));
+
 
     // Alpine компонент
     function chatApp() {
@@ -68,9 +81,16 @@
         login,
         createRoom,
         fetchRoomsWithNames,
+        joinRoom,
+        inviteUserToRoom,
+        getRoomName,
+        switchRoom,
+        sendMessage,
+        fetchMessages
       };
     }
   </script>
 
 </body>
+
 </html>
