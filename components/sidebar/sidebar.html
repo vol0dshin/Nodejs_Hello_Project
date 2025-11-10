@@ -3,19 +3,50 @@
 <template x-if="accessToken">
   <div class="sidebar p-4 bg-gray-50 border-r border-gray-200 overflow-y-auto">
     <h2 class="sidebar-title text-xl font-bold mb-4">Rooms</h2>
+
+    <!-- Список кімнат -->
     <div class="room-list space-y-1 px-4">
-      <ul class="sidebar-list">
+      <ul class="sidebar-list space-y-1">
         <template x-for="room in rooms" :key="room.roomId">
-          <li @click="switchRoom(room.roomId)" :class="{ 'active': room.roomId === roomId }"
-            x-text="room.name || room.roomId" class="cursor-pointer rounded-lg"></li>
+          <li
+            class="flex items-center justify-between cursor-pointer rounded-lg p-2 hover:bg-indigo-50 transition"
+            :class="{ 'bg-indigo-100 font-medium': room.roomId === roomId }"
+          >
+            <!-- Клік по назві кімнати -->
+            <span
+              class="flex-1 truncate"
+              @click="switchRoom(room.roomId)"
+              x-text="room.name || room.roomId"
+            ></span>
+
+            <!-- Кнопка видалення -->
+            <button
+              @click.stop="leaveRoom(room.roomId)"
+              class="ml-2 text-red-500 hover:text-red-700 text-xs font-medium"
+            >
+              × Видалити
+            </button>
+          </li>
         </template>
+      </ul>
     </div>
-    </ul>
+
+    <!-- Створення нової кімнати -->
     <div class="mt-4">
-      <input x-model="newRoomName" placeholder="New room name" class="border p-2 w-full mb-2 rounded">
-      <button @click="createRoom()"
-        class="bg-indigo-500 text-white p-2 w-full rounded hover:bg-indigo-600 transition">Create Room</button>
-      <p x-show="newRoomId" class="text-sm text-gray-600 mt-1">Room ID: <span x-text="newRoomId"></span></p>
+      <input
+        x-model="newRoomName"
+        placeholder="New room name"
+        class="border p-2 w-full mb-2 rounded"
+      >
+      <button
+        @click="createRoom()"
+        class="bg-indigo-500 text-white p-2 w-full rounded hover:bg-indigo-600 transition"
+      >
+        Create Room
+      </button>
+      <p x-show="newRoomId" class="text-sm text-gray-600 mt-1">
+        Room ID: <span x-text="newRoomId"></span>
+      </p>
     </div>
   </div>
 </template>

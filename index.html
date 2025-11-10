@@ -12,6 +12,12 @@
   <!-- Глобальні стилі -->
   <link rel="stylesheet" href="./styles/index.css">
 
+  <!-- Стилі компонентів -->
+  <link rel="stylesheet" href="./components/sidebar/sidebar.css">
+  <link rel="stylesheet" href="./components/user/user.css">
+  <link rel="stylesheet" href="./components/login/login.css">
+  <link rel="stylesheet" href="./components/chat/chat.css">
+
   <!-- Скрипти компонентів -->
   <script src="./components/login/login.js"></script>
   <script src="./components/sidebar/sidebar.js"></script>
@@ -22,57 +28,47 @@
 <body class="index-container bg-gray-100 flex justify-center">
 
   <div x-data="chatApp()" :class="accessToken ? '' : 'items-center'" class="flex w-full">
+
     <!-- Сайдбар -->
     <div id="sidebar-container" class="sidebar"></div>
 
-    <!-- Основна частина -->
-    <div class="chat-area p-4 flex flex-col">
+    <!-- Основна частина (чат + логін) -->
+    <div class="chat-area p-4 flex flex-col flex-1">
       <div id="login-container"></div>
-
-      <!-- Контейнер для чату -->
       <div id="chat-container" class="chat-container"></div>
-
     </div>
+
+    <!-- Панель користувачів -->
     <div id="user-container" class="user"></div>
   </div>
 
   <script>
     // Підвантаження компонентів після завантаження DOM
-    document.addEventListener('DOMContentLoaded', () => {
-      // login.html
-      fetch('./components/login/login.html')
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById('login-container').innerHTML = html;
-        })
-        .catch(err => console.error('Помилка завантаження login.html:', err));
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // login.html
+        const loginHtml = await fetch('./components/login/login.html').then(res => res.text());
+        document.getElementById('login-container').innerHTML = loginHtml;
 
-      // sidebar.html
-      fetch('./components/sidebar/sidebar.html')
-        .then(res => res.text())
-        .then(html => {
-          document.getElementById('sidebar-container').innerHTML = html;
-        })
-        .catch(err => console.error('Помилка завантаження sidebar.html:', err));
+        // sidebar.html
+        const sidebarHtml = await fetch('./components/sidebar/sidebar.html').then(res => res.text());
+        document.getElementById('sidebar-container').innerHTML = sidebarHtml;
+
+        // chat.html
+        const chatHtml = await fetch('./components/chat/chat.html').then(res => res.text());
+        document.getElementById('chat-container').innerHTML = chatHtml;
+
+        // user.html
+        const userHtml = await fetch('./components/user/user.html').then(res => res.text());
+        document.getElementById('user-container').innerHTML = userHtml;
+
+      } catch (err) {
+        console.error('Помилка завантаження компонентів:', err);
+      }
     });
-    // Завантаження chat.html
-    fetch('./components/chat/chat.html')
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById('chat-container').innerHTML = html;
-      })
-      .catch(error => console.error('Error loading chat:', error));
-    // user.html
-    fetch('./components/user/user.html')
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById('user-container').innerHTML = html;
-      })
-      .catch(err => console.error('Помилка завантаження user.html:', err));
 
 
-
-    // Alpine компонент
+    // Alpine компонент (глобальна логіка)
     function chatApp() {
       return {
         username: '',
@@ -90,6 +86,8 @@
         error: '',
         lastSyncToken: '',
         roomMembers: [],
+
+        // Функції
         login,
         createRoom,
         fetchRoomsWithNames,
@@ -100,6 +98,8 @@
         sendMessage,
         fetchMessages,
         fetchRoomMembers,
+        leaveRoom,
+        kickUser,
       };
     }
   </script>
