@@ -14,3 +14,9 @@
 .login-error {
   font-size: 0.9rem;
 }
+#login-container {
+    width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+}

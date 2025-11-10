@@ -1,0 +1,8 @@
+.user {
+  width: 260px;
+  min-width: 260px;
+  border-left: 1px solid #ddd;
+  background-color: #f9f9f9;
+  overflow-y: auto;
+  align-self: stretch;
+}

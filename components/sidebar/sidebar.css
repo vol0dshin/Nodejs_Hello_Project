@@ -15,3 +15,7 @@
   background-color: #bfdbfe;
   font-weight: 500;
 }
+.sidebar-list {
+    height: 76vh;
+    overflow-y: scroll;
+}

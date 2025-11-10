@@ -67,6 +67,7 @@ async function createRoom() {
       this.messages = [];
       this.lastSyncToken = '';
       this.fetchMessages();
+      this.fetchRoomMembers();
     }
 
 
