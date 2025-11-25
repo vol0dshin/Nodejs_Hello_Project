@@ -86,6 +86,10 @@
         error: '',
         lastSyncToken: '',
         roomMembers: [],
+        editMode: null,
+        editText: '',
+        localEdits: {},
+        localDeletes: new Set(),
 
         // Функції
         login,
@@ -100,8 +104,22 @@
         fetchRoomMembers,
         leaveRoom,
         kickUser,
+        startEdit,
+        cancelEdit,
+        saveEdit,
+        deleteMessage,
+
+        playNotificationSound,
+        showDesktopNotification,
       };
     }
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    });
   </script>
 
 </body>

@@ -16,17 +16,48 @@
 
 
     <!-- Список повідомлень -->
-    <div id="messages" class="flex-1 overflow-y-auto mb-4 p-2 bg-gray-50 rounded border border-gray-200  h-[500px]">
-      <template x-if="messages.length === 0">
-        <p class="text-gray-500 text-center">No messages yet. Start the conversation!</p>
-      </template>
-      <template x-for="msg in messages" :key="msg.id">
-        <div class="mb-2">
+    <div id="messages" class="flex-1 overflow-y-auto mb-4 p-2 bg-gray-50 rounded border border-gray-200">
+  <template x-if="messages.length === 0">
+    <p class="text-gray-500 text-center">No messages yet. Start the conversation!</p>
+  </template>
+
+  <template x-for="msg in messages" :key="msg.id">
+    <div class="mb-2 p-2 rounded hover:bg-gray-100 group relative">
+
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
           <strong x-text="msg.sender === userId ? 'You' : msg.sender.split(':')[0].substring(1) + ':'"></strong>
-          <span x-text="msg.body" class="ml-2"></span>
+          <span x-text="msg.body" class="ml-2 break-words"></span>
+          <span x-show="msg.edited" class="text-xs text-gray-500 ml-2">(edited)</span>
         </div>
-      </template>
+
+        <template x-if="msg.sender === userId">
+          <div class="hidden group-hover:flex space-x-1 ml-2">
+            <button @click="startEdit(msg.id, msg.body)"
+                    class="text-xs text-blue-600 hover:underline">Edit</button>
+
+            <button @click="deleteMessage(msg.id)"
+                    class="text-xs text-red-600 hover:underline">Delete</button>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="editMode === msg.id" class="mt-2">
+        <textarea x-model="editText"
+                  @keyup.enter="saveEdit(msg.id)"
+                  @keyup.escape="cancelEdit()"
+                  class="w-full p-1 border rounded text-sm resize-none"
+                  rows="2"></textarea>
+        <div class="flex space-x-1 mt-1">
+          <button @click="saveEdit(msg.id)" class="text-xs bg-green-600 text-white px-2 py-1 rounded">Save</button>
+          <button @click="cancelEdit()" class="text-xs bg-gray-400 text-white px-2 py-1 rounded">Cancel</button>
+        </div>
+      </div>
+
     </div>
+  </template>
+</div>
+
 
 
     <!-- Поле для введення повідомлення -->
